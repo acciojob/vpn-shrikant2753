@@ -6,7 +6,7 @@ import javax.persistence.*;
 @Table(name = "country")
 public class Country{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     //@Enumerated(EnumType.STRING)
@@ -19,6 +19,7 @@ public class Country{
     @JoinColumn
     private ServiceProvider serviceProvider;
 
+    //children of country
     @OneToOne
     @JoinColumn
     private User user;
