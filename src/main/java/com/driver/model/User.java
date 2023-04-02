@@ -94,4 +94,8 @@ public class User {
     public void setOriginalCountry(Country originalCountry) {
         this.originalCountry = originalCountry;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

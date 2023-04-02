@@ -59,4 +59,8 @@ public class Country{
     public void setUser(User user) {
         this.user = user;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

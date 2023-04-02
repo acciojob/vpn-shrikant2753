@@ -73,4 +73,8 @@ public class ServiceProvider {
     public void setUser(List<User> user) {
         this.user = user;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }
