@@ -19,11 +19,34 @@ public class ConnectionServiceImpl implements ConnectionService {
 
     @Override
     public User connect(int userId, String countryName) throws Exception{
-        return null;
+        User user = userRepository2.findById(userId).get();
+        if(user.getMaskedIp().equals(null)){
+            throw  new Exception("Already connected");
+        }
+
+        else if(countryName.equalsIgnoreCase(user.getOriginalCountry().getCountryName().toString())){
+            return user;
+        }
+        else{
+            if(user.getServiceProviderList().size()==0){
+                throw new Exception("Unable to connect");
+            }
+
+
+
+        }
+        return  user;
     }
     @Override
     public User disconnect(int userId) throws Exception {
-        return null;
+        User user = userRepository2.findById(userId).get();
+
+        if(user.isConnected()==false){
+            throw new Exception("already disconnected");
+        }
+        user.setMaskedIp(null);
+        userRepository2.save(user);
+        return user;
     }
     @Override
     public User communicate(int senderId, int receiverId) throws Exception {
