@@ -28,7 +28,7 @@ public class ServiceProvider {
     private List<Country> countryList;
 
     @OneToMany(mappedBy = "serviceProviderList", cascade = CascadeType.ALL)
-    private List<User> user;
+    private List<User> users;
 
     public int getId() {
         return id;
@@ -66,12 +66,12 @@ public class ServiceProvider {
         this.countryList = countryList;
     }
 
-    public List<User> getUser() {
-        return user;
+    public List<User> getUsers() {
+        return users;
     }
 
-    public void setUser(List<User> user) {
-        this.user = user;
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
     public void setId(int id) {
