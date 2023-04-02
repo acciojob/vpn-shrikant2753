@@ -1,5 +1,7 @@
 package com.driver.services.impl;
 
+import com.driver.model.CountryName;
+import com.driver.model.User;
 import com.driver.repository.CountryRepository;
 import com.driver.repository.ServiceProviderRepository;
 import com.driver.repository.UserRepository;
@@ -20,10 +22,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(String username, String password, String countryName) throws Exception{
 
+        if(countryName.equals("IND") || countryName.equals("USA") || countryName.equals("AUS") ||
+                countryName.equals("CHI") || countryName.equals("JPN")){
+            User user = new User();
+            user.setUsername(username);
+            user.setPassword(password);
+
+            if(countryName.equalsIgnoreCase("IND")){
+                user.setOriginalIp(CountryName.IND.toCode());
+
+            }
+            return user;
+        }
+        else{
+            throw new Exception("Country not found");
+        }
     }
 
     @Override
     public User subscribe(Integer userId, Integer serviceProviderId) {
-
+        return null;
     }
 }
