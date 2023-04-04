@@ -67,6 +67,10 @@ public class User {
         return connected;
     }
 
+    public boolean getConnected() {
+        return connected;
+    }
+
     public void setConnected(boolean connected) {
         this.connected = connected;
     }
