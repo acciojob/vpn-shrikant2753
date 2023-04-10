@@ -87,6 +87,38 @@ public class ConnectionServiceImpl implements ConnectionService {
     }
     @Override
     public User communicate(int senderId, int receiverId) throws Exception {
-        return null;
+        User receiver = userRepository2.findById(receiverId).get();
+        CountryName receiverCountryName = null;
+        if (receiver.getConnected()) {
+            String maskedCode = receiver.getMaskedIp().substring(0, 3);
+            switch (maskedCode) {
+                case "001":
+                    receiverCountryName = CountryName.IND;
+                    break;
+                case "002":
+                    receiverCountryName = CountryName.USA;
+                    break;
+                case "003":
+                    receiverCountryName = CountryName.AUS;
+                    break;
+                case "004":
+                    receiverCountryName = CountryName.CHI;
+                    break;
+                case "005":
+                    receiverCountryName = CountryName.JPN;
+                    break;
+
+            }
+        } else {
+            receiverCountryName = receiver.getOriginalCountry().getCountryName();
+        }
+
+        User user = null;
+        try {
+            user = connect(senderId, receiverCountryName.toString());
+        } catch (Exception e) {
+            throw new Exception("Cannot establish communication");
+        }
+        return user;
     }
 }
