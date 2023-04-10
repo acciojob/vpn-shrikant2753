@@ -79,7 +79,7 @@ public class ConnectionServiceImpl implements ConnectionService {
         User user = userRepository2.findById(userId).get();
 
         if(!user.getConnected()){
-            throw new Exception("already disconnected");
+            throw new Exception("Already disconnected");
         }
         user.setMaskedIp(null);
         userRepository2.save(user);
