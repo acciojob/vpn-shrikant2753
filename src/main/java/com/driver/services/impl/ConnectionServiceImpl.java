@@ -70,7 +70,6 @@ public class ConnectionServiceImpl implements ConnectionService {
                 userRepository2.save(user);
                 serviceProviderRepository2.save(serviceProvider);
             }
-
         }
         return  user;
     }
@@ -78,10 +77,11 @@ public class ConnectionServiceImpl implements ConnectionService {
     public User disconnect(int userId) throws Exception {
         User user = userRepository2.findById(userId).get();
 
-        if(!user.getConnected()){
+        if(user.getConnected()==false){
             throw new Exception("Already disconnected");
         }
         user.setMaskedIp(null);
+        user.setConnected(false);
         userRepository2.save(user);
         return user;
     }
