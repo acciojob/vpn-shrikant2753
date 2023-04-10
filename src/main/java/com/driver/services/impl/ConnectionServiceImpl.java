@@ -8,6 +8,7 @@ import com.driver.services.ConnectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,57 +22,55 @@ public class ConnectionServiceImpl implements ConnectionService {
 
     @Override
     public User connect(int userId, String countryName) throws Exception{
+        countryName = countryName.toUpperCase();
         User user = userRepository2.findById(userId).get();
-        if(user.getMaskedIp().equals(null)){
-            throw  new Exception("Already connected");
+        if (user.getConnected() || user.getMaskedIp() != null) {
+            throw new Exception("Already connected");
         }
-
-        else if(countryName.equalsIgnoreCase(user.getOriginalCountry().getCountryName().toString())){
+        String currentCountry = String.valueOf(user.getOriginalCountry().getCountryName());
+        if (currentCountry.equals(countryName)) {
             return user;
         }
-        else{
-            if(user.getServiceProviderList().size()==0){
-                throw new Exception("Unable to connect");
-            }
 
-            List<ServiceProvider> serviceProviderList = user.getServiceProviderList();
-            int a = Integer.MAX_VALUE;
-            ServiceProvider serviceProvider=null;
-            Country country = null;
+        List<ServiceProvider> updatedServiceProvider = new ArrayList<>();
+        boolean marker = true;
+        ServiceProvider realProvider = null;
+        int max = Integer.MAX_VALUE;
+        Country country = null;
+        List<ServiceProvider> userServiceProviderList = user.getServiceProviderList();
 
-            for(ServiceProvider serviceProvider1 : serviceProviderList){
-                List<Country> countryList = serviceProvider1.getCountryList();
-
-                for(Country country1 : countryList){
-                    if(countryName.equalsIgnoreCase(country1.getCountryName().toString()) &&
-                            a > serviceProvider1.getId()){
-                        a = serviceProvider1.getId();
-                        serviceProvider = serviceProvider1;
-                        country = country1;
-                    }
+        for (ServiceProvider s : userServiceProviderList) {
+            List<Country> countryList = s.getCountryList();
+            for (Country c : countryList) {
+                if (c.getCountryName().toString().equals(countryName) && max > s.getId()) {
+                    max = s.getId();
+                    realProvider = s;
+                    country = c;
+                    marker = false;
                 }
             }
-
-            if (serviceProvider!=null){
-                Connection connection = new Connection();
-                connection.setUser(user);
-                connection.setServiceProvider(serviceProvider);
-
-                String cc = country.getCode();
-                int givenId = serviceProvider.getId();
-                String mask = cc+"."+givenId+"."+userId;
-
-                user.setMaskedIp(mask);
-                user.setConnected(true);
-                user.getConnectionList().add(connection);
-
-                serviceProvider.getConnectionList().add(connection);
-
-                userRepository2.save(user);
-                serviceProviderRepository2.save(serviceProvider);
-            }
         }
-        return  user;
+        if (marker) {
+            throw new Exception("Unable to connect");
+        }
+
+        Connection connection = new Connection();
+        connection.setUser(user);
+        user.setConnected(true);
+        List<Connection> connectionList = user.getConnectionList();
+        connectionList.add(connection);
+        user.setConnectionList(connectionList);
+        connection.setServiceProvider(realProvider);
+
+
+        user.setMaskedIp(country.getCode() + "." + realProvider.getId() + "." + user.getId());
+
+        realProvider.getConnectionList().add(connection);
+
+        serviceProviderRepository2.save(realProvider);
+        userRepository2.save(user);
+
+        return user;
     }
     @Override
     public User disconnect(int userId) throws Exception {
