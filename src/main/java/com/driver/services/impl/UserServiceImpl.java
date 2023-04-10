@@ -24,50 +24,32 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(String username, String password, String countryName) throws Exception{
 
-        if(countryName.equals("IND") || countryName.equals("USA") || countryName.equals("AUS") ||
-                countryName.equals("CHI") || countryName.equals("JPN")){
-            User user = new User();
-            user.setUsername(username);
-            user.setPassword(password);
-
-            Country country = new Country();
-
-            if(countryName.equalsIgnoreCase("IND")){
-                country.setCountryName(CountryName.IND);
-                country.setCode(CountryName.IND.toCode());
-            }
-
-            else if(countryName.equalsIgnoreCase("USA")){
-                country.setCountryName(CountryName.USA);
-                country.setCode(CountryName.USA.toCode());
-            }
-
-            else if(countryName.equalsIgnoreCase("AUS")){
-                country.setCountryName(CountryName.AUS);
-                country.setCode(CountryName.AUS.toCode());
-            }
-
-            else if(countryName.equalsIgnoreCase("CHI")){
-                country.setCountryName(CountryName.CHI);
-                country.setCode(CountryName.CHI.toCode());
-            }
-
-            else if(countryName.equalsIgnoreCase("JPN")){
-                country.setCountryName(CountryName.JPN);
-                country.setCode(CountryName.JPN.toCode());
-            }
-            user.setOriginalCountry(country);
-
-            String code = country.getCode() + "." + userRepository3.save(user).getId();
-            user.setOriginalIp(code);
-            user.setConnected(false);
-            user.setMaskedIp(null);
-            userRepository3.save(user);
-            return user;
-        }
-        else{
+        String countryNameCaps = countryName.toUpperCase();
+        if (!countryNameCaps.equals("IND") && !countryNameCaps.equals("USA")
+                && !countryNameCaps.equals("AUS") && !countryNameCaps.equals("CHI")
+                && !countryNameCaps.equals("JPN"))
             throw new Exception("Country not found");
-        }
+
+        Country country = new Country();
+        country.setCountryName(CountryName.valueOf(countryNameCaps));
+        country.setCode(CountryName.valueOf(countryNameCaps).toCode());
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setConnected(false);
+        user.setMaskedIp(null);
+
+        country.setUser(user);
+
+        user.setOriginalCountry(country);
+
+        userRepository3.save(user);
+        user.setOriginalIp(user.getOriginalCountry().getCode()+"."+user.getId());
+
+        userRepository3.save(user);
+
+        return user;
     }
 
     @Override
